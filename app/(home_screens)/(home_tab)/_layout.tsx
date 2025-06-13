@@ -12,7 +12,6 @@ interface Screen {
  * @returns The home tab layout
  */
 export default function HomeTabLayout() {
-
   /**
    * @description Screens for the home tab
    * @type {Array<{name: string, title: string, icon: keyof typeof Ionicons.glyphMap}>}
@@ -31,7 +30,7 @@ export default function HomeTabLayout() {
     {
       name: "NewFeedScreen",
       title: "NewFeed",
-      icon: "newspaper" as keyof typeof Ionicons.glyphMap,
+      icon: "add-circle" as keyof typeof Ionicons.glyphMap,
     },
     {
       name: "ProfileScreen",
