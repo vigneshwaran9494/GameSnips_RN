@@ -1,10 +1,20 @@
+import BodyContainer from "@/components/ui/BodyContainer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 import React from "react";
-import { Text, View } from "react-native";
+import { Button, Text } from "react-native";
 
 export default function ProfileScreen() {
+  
+  const handleLogout = () => {
+    AsyncStorage.clear();
+    router.replace("/(auth_screens)/LoginScreen");
+  };
+
   return (
-    <View>
+    <BodyContainer>
       <Text>ProfileScreen</Text>
-    </View>
+      <Button title="logout" onPress={handleLogout} />
+    </BodyContainer>
   );
 }

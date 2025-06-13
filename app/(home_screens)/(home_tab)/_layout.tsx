@@ -58,7 +58,12 @@ export default function HomeTabLayout() {
   };
 
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarShowLabel: false,
+      }}
+    >
       {screens.map((screen) => (
         <Tabs.Screen
           key={screen.name}

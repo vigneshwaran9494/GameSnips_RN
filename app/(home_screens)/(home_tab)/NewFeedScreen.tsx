@@ -1,10 +1,16 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 export default function MyShowsScreen() {
   return (
-    <View>
-      <Text>MyShowsScreen</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Text>NewFeedScreen</Text>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
