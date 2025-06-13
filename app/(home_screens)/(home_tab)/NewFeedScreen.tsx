@@ -1,3 +1,4 @@
+import { useCreateFeed } from "@/hooks/Feeds/useCreateFeed";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useFormik } from "formik";
@@ -29,6 +30,8 @@ const validationSchema = Yup.object({
 });
 
 export default function NewFeedScreen() {
+  const { createFeed, isLoading } = useCreateFeed();
+
   const {
     handleChange,
     handleBlur,
@@ -40,8 +43,13 @@ export default function NewFeedScreen() {
   } = useFormik({
     initialValues: { title: "", description: "", creatorName: "", image: "" },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      const result = await createFeed(values);
+      if (result.success) {
+        console.log("Feed created successfully");
+      } else {
+        console.log("Failed to create feed");
+      }
     },
   });
 
@@ -102,7 +110,11 @@ export default function NewFeedScreen() {
             <Text style={styles.errorText}>{errors.image}</Text>
           )}
 
-          <Button title="Submit" onPress={() => handleSubmit()} />
+          <Button
+            title={isLoading ? "Creating..." : "Submit"}
+            onPress={() => handleSubmit()}
+            disabled={isLoading}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

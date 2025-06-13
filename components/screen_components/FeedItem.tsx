@@ -11,8 +11,6 @@ export default function FeedItem({ item }: { item: FeedListItem }) {
   const itemHeight =
     Dimensions.get("window").height - insets.top - tabBarHeight;
 
-  console.log(insets);
-
   return (
     <View style={[styles.container, { height: itemHeight }]}>
       <Image source={{ uri: item.image }} style={styles.image} />

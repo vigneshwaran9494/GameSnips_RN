@@ -1,3 +1,9 @@
+export interface Author {
+  id: number;
+  name: string;
+  image: string;
+}
+
 export interface FeedListItem {
   id: number;
   title: string;
@@ -8,11 +14,7 @@ export interface FeedListItem {
   likes: number;
   comments: number;
   bookmarks: number;
-  author: {
-    id: number;
-    name: string;
-    image: string;
-  };
+  author: Author;
 }
 
 export interface FeedList {
