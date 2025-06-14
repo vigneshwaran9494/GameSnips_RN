@@ -50,6 +50,7 @@ export default function index() {
       <FlatList
         style={{}}
         data={feeds}
+        keyExtractor={(item) => item.id.toString()}
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         snapToInterval={itemHeight}
