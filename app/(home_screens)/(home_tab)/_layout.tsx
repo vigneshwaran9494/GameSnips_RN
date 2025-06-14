@@ -1,11 +1,11 @@
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 interface Screen {
   name: string;
   title: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: keyof typeof MaterialIcons.glyphMap;
 }
 
 /**
@@ -13,7 +13,6 @@ interface Screen {
  * @returns The home tab layout
  */
 export default function HomeTabLayout() {
-
   const tabBarColor = useThemeColor({}, "background");
   const tabBarIconActiveColor = useThemeColor({}, "tabIconSelected");
   const tabBarIconInactiveColor = useThemeColor({}, "tabIconDefault");
@@ -26,17 +25,17 @@ export default function HomeTabLayout() {
     {
       name: "index",
       title: "Home",
-      icon: "home" as keyof typeof Ionicons.glyphMap,
+      icon: "home" as keyof typeof MaterialIcons.glyphMap,
     },
     {
       name: "NewFeedScreen",
       title: "NewFeed",
-      icon: "add-circle" as keyof typeof Ionicons.glyphMap,
+      icon: "add-box" as keyof typeof MaterialIcons.glyphMap,
     },
     {
       name: "ProfileScreen",
       title: "Profile",
-      icon: "person" as keyof typeof Ionicons.glyphMap,
+      icon: "person-4" as keyof typeof MaterialIcons.glyphMap,
     },
   ];
 
@@ -49,15 +48,13 @@ export default function HomeTabLayout() {
    * @returns The icon component
    */
   const getTabBarIcon = (
-    name: keyof typeof Ionicons.glyphMap,
+    name: keyof typeof MaterialIcons.glyphMap,
     focused: boolean,
     color: string,
     size: number
   ) => {
-    return <Ionicons name={name} color={color} size={size} />;
+    return <MaterialIcons name={name} color={color} size={size} />;
   };
-
-
 
   return (
     <Tabs
