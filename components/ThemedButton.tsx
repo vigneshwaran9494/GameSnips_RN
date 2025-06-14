@@ -1,9 +1,17 @@
 import {
+  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
   View,
   type ButtonProps,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "./ThemedText";
@@ -20,6 +28,8 @@ export function ThemedButton({
   darkColor,
   icon,
   title,
+  isLoading,
+  disabled,
   ...rest
 }: ThemedButtonProps) {
   const backgroundColor = useThemeColor(
@@ -31,13 +41,44 @@ export function ThemedButton({
     "buttonText"
   );
 
+  const scale = useSharedValue(1);
+  const width = useSharedValue(100);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    if (isLoading) {
+      scale.value = withSequence(
+        withTiming(0.95, { duration: 200 }),
+        withSpring(1, { damping: 10 })
+      );
+      width.value = withTiming(20, { duration: 200 });
+    } else {
+      width.value = withSpring(100, { damping: 10 });
+    }
+    return {
+      transform: [{ scale: scale.value }],
+      width: `${width.value}%`,
+    };
+  });
+
   return (
-    <TouchableOpacity style={[styles.container, { backgroundColor }]} {...rest}>
-      <ThemedText type="defaultSemiBold" style={[{ color: textColor }]}>
-        {title}
-      </ThemedText>
-      {icon && <View style={{ marginLeft: 8 }}>{icon}</View>}
-    </TouchableOpacity>
+    <Animated.View style={animatedStyle}>
+      <TouchableOpacity
+        disabled={disabled || isLoading}
+        style={[styles.container, { backgroundColor }]}
+        {...rest}
+      >
+        {isLoading ? (
+          <ActivityIndicator size="small" color={textColor} />
+        ) : (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <ThemedText type="defaultSemiBold" style={[{ color: textColor }]}>
+              {title}
+            </ThemedText>
+            {icon && <View style={{ marginLeft: 8 }}>{icon}</View>}
+          </View>
+        )}
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 

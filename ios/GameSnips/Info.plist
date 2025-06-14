@@ -81,5 +81,7 @@
     <string>Give GameSnips permission to access your camera</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Give GameSnips permission to use your microphone</string>
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>  
   </dict>
 </plist>

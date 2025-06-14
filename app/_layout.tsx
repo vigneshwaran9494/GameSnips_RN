@@ -13,6 +13,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { initializeApp } from "firebase/app";
 import { useEffect } from "react";
 
+import Toast from "react-native-toast-message";
+
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
@@ -42,6 +45,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
+      <Toast />
     </ThemeProvider>
   );
 }

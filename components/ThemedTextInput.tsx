@@ -1,11 +1,15 @@
 import { StyleSheet, TextInput, View, type TextInputProps } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { hp } from "@/resources/dimensions";
+import { ThemedText } from "./ThemedText";
 
 export type ThemedTextProps = TextInputProps & {
   lightColor?: string;
   darkColor?: string;
   type?: "default" | "title" | "defaultSemiBold" | "subtitle" | "link";
+  error?: string;
+  touched?: boolean;
 };
 
 export function ThemedTextInput({
@@ -13,6 +17,8 @@ export function ThemedTextInput({
   lightColor,
   darkColor,
   type = "default",
+  error,
+  touched,
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
@@ -22,20 +28,31 @@ export function ThemedTextInput({
   );
 
   return (
-    <View style={[styles.container, { borderColor: color, flex: 1 }]}>
-      <TextInput
-        placeholderTextColor={placeholderColor}
+    <View style={{ gap: hp(1) }}>
+      <View
         style={[
-          { color, width: "100%" },
-          type === "default" ? styles.default : undefined,
-          type === "title" ? styles.title : undefined,
-          type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
-          type === "subtitle" ? styles.subtitle : undefined,
-          type === "link" ? styles.link : undefined,
-          style,
+          styles.container,
+          { borderColor: color },
+          error && touched && { borderColor: "red" },
         ]}
-        {...rest}
-      />
+      >
+        <TextInput
+          placeholderTextColor={placeholderColor}
+          style={[
+            { color, width: "100%" },
+            type === "default" ? styles.default : undefined,
+            type === "title" ? styles.title : undefined,
+            type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
+            type === "subtitle" ? styles.subtitle : undefined,
+            type === "link" ? styles.link : undefined,
+            style,
+          ]}
+          {...rest}
+        />
+      </View>
+      {error && touched && (
+        <ThemedText style={styles.error}>{error}</ThemedText>
+      )}
     </View>
   );
 }
@@ -72,5 +89,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#0a7ea4",
     fontFamily: "Poppins-Regular",
+  },
+  error: {
+    color: "red",
+    fontSize: 12,
+    fontFamily: "Poppins-Regular",
+   
   },
 });

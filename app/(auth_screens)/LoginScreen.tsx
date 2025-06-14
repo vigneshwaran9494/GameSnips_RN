@@ -3,9 +3,10 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedView } from "@/components/ThemedView";
 import BodyContainer from "@/components/ui/BodyContainer";
+import { useLoginHooks } from "@/hooks/login/useLoginHooks";
 import { hp, wp } from "@/resources/dimensions";
 import { MaterialIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { useFormik } from "formik";
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, {
@@ -15,45 +16,68 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import * as Yup from "yup";
 
-export default function LoginScreen() {
-  // Animation values
+// Move validation schema to a separate file in the future
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters"),
+});
+
+// Custom hook for animations
+const useLoginAnimations = () => {
   const titleOpacity = useSharedValue(0);
   const titleScale = useSharedValue(0.8);
-  const inputOpacity = useSharedValue(0);
+  const emailInputOpacity = useSharedValue(0);
+  const passwordInputOpacity = useSharedValue(0);
   const buttonOpacity = useSharedValue(0);
   const buttonScale = useSharedValue(0.9);
 
   useEffect(() => {
-    // Animate title
     titleOpacity.value = withTiming(1, { duration: 800 });
     titleScale.value = withSpring(1, { damping: 8 });
-
-    // Animate input with delay
-    inputOpacity.value = withDelay(300, withTiming(1, { duration: 600 }));
-
-    // Animate button with delay
+    emailInputOpacity.value = withDelay(300, withTiming(1, { duration: 600 }));
+    passwordInputOpacity.value = withDelay(300, withTiming(1, { duration: 600 }));
     buttonOpacity.value = withDelay(600, withTiming(1, { duration: 600 }));
     buttonScale.value = withDelay(600, withSpring(1, { damping: 8 }));
   }, []);
 
-  const titleStyle = useAnimatedStyle(() => ({
-    opacity: titleOpacity.value,
-    transform: [{ scale: titleScale.value }],
-  }));
-
-  const inputStyle = useAnimatedStyle(() => ({
-    opacity: inputOpacity.value,
-  }));
-
-  const buttonStyle = useAnimatedStyle(() => ({
-    opacity: buttonOpacity.value,
-    transform: [{ scale: buttonScale.value }],
-  }));
-
-  const handleLogin = () => {
-    router.push("/(auth_screens)/VerifyOtpScreen");
+  return {
+    titleStyle: useAnimatedStyle(() => ({
+      opacity: titleOpacity.value,
+      transform: [{ scale: titleScale.value }],
+    })),
+    emailInputStyle: useAnimatedStyle(() => ({
+      opacity: emailInputOpacity.value,
+    })),
+    passwordInputStyle: useAnimatedStyle(() => ({
+      opacity: passwordInputOpacity.value,
+    })),
+    buttonStyle: useAnimatedStyle(() => ({
+      opacity: buttonOpacity.value,
+      transform: [{ scale: buttonScale.value }],
+    })),
   };
+};
+
+export default function LoginScreen() {
+  const { handleLogin, loading } = useLoginHooks();
+  const { titleStyle, emailInputStyle, passwordInputStyle, buttonStyle } = useLoginAnimations();
+
+  const { handleChange, handleBlur, handleSubmit, values, errors, touched } = useFormik({
+    initialValues: { email: "", password: "" },
+    validationSchema,
+    onSubmit: async (values) => {
+      const user = await handleLogin(values.email, values.password);
+      if (user) {
+        console.log("user", user);
+      }
+    },
+  });
 
   return (
     <BodyContainer>
@@ -64,33 +88,49 @@ export default function LoginScreen() {
           </ThemedText>
         </Animated.View>
 
-        <Animated.View
-          style={[
-            inputStyle,
-            {
-              flexDirection: "row",
-              gap: wp(2),
-            },
-          ]}
-        >
-          <View style={styles.countryCode}>
-            <ThemedText type="default">+1</ThemedText>
-          </View>
-          <ThemedTextInput
-            type="default"
-            placeholder="Phone Number"
-            style={styles.phoneNumberInput}
-            placeholderTextColor="#666"
-          />
-        </Animated.View>
+        <View style={styles.formContainer}>
+          <Animated.View style={[styles.animatedContainer, emailInputStyle]}>
+            <ThemedTextInput
+              type="default"
+              placeholder="Email"
+              style={styles.input}
+              placeholderTextColor="#666"
+              value={values.email}
+              autoCapitalize="none"
+              autoComplete="email"
+              keyboardType="email-address"
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              error={errors.email}
+              touched={touched.email}
+            />
+          </Animated.View>
 
-        <Animated.View style={[buttonStyle]}>
-          <ThemedButton
-            title="Login"
-            onPress={handleLogin}
-            icon={<MaterialIcons name="login" size={24} color="white" />}
-          />
-        </Animated.View>
+          <Animated.View style={[styles.animatedContainer, passwordInputStyle]}>
+            <ThemedTextInput
+              type="default"
+              placeholder="Password"
+              style={styles.input}
+              secureTextEntry
+              placeholderTextColor="#666"
+              value={values.password}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              error={errors.password}
+              touched={touched.password}
+            />
+          </Animated.View>
+
+          <Animated.View style={[styles.animatedButtonContainer, buttonStyle]}>
+            <ThemedButton
+              title="Login"
+              onPress={handleSubmit}
+              isLoading={loading}
+              disabled={loading}
+              icon={<MaterialIcons name="login" size={24} color="white" />}
+            />
+          </Animated.View>
+        </View>
       </ThemedView>
     </BodyContainer>
   );
@@ -114,24 +154,21 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
-  countryCode: {
-    alignItems: "center",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#fff",
-    padding: 16,
-  },
-  subtitle: {
-    fontSize: wp(4),
-    color: "#666",
-    marginTop: hp(1),
-  },
   formContainer: {
+    alignItems: "center",
+    justifyContent: "center",
     gap: hp(2),
+    width: "100%",
   },
-  phoneNumberInput: {},
-  buttonContainer: {
-    marginTop: hp(4),
+  animatedContainer: {
+    width: "100%",
   },
-  loginButton: {},
+  animatedButtonContainer: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  input: {
+    width: "100%",
+  },
 });
