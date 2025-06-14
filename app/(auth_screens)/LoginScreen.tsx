@@ -5,10 +5,9 @@ import { ThemedView } from "@/components/ThemedView";
 import BodyContainer from "@/components/ui/BodyContainer";
 import { hp, wp } from "@/resources/dimensions";
 import { MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -53,15 +52,7 @@ export default function LoginScreen() {
   }));
 
   const handleLogin = () => {
-    AsyncStorage.setItem(
-      "userData",
-      JSON.stringify({
-        id: 1,
-        name: "John Doe",
-        email: "john.doe@example.com",
-      })
-    );
-    router.replace("/(home_screens)");
+    router.push("/(auth_screens)/VerifyOtpScreen");
   };
 
   return (
@@ -73,7 +64,18 @@ export default function LoginScreen() {
           </ThemedText>
         </Animated.View>
 
-        <Animated.View style={[inputStyle]}>
+        <Animated.View
+          style={[
+            inputStyle,
+            {
+              flexDirection: "row",
+              gap: wp(2),
+            },
+          ]}
+        >
+          <View style={styles.countryCode}>
+            <ThemedText type="default">+1</ThemedText>
+          </View>
           <ThemedTextInput
             type="default"
             placeholder="Phone Number"
@@ -111,6 +113,13 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0, 255, 255, 0.5)",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
+  },
+  countryCode: {
+    alignItems: "center",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#fff",
+    padding: 16,
   },
   subtitle: {
     fontSize: wp(4),

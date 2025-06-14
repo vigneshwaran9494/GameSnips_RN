@@ -4,6 +4,7 @@ export default function AuthLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="LoginScreen" />
+        <Stack.Screen name="VerifyOtpScreen" />
       </Stack>
   );
 }

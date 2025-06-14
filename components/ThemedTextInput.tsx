@@ -22,11 +22,11 @@ export function ThemedTextInput({
   );
 
   return (
-    <View style={[styles.container, { borderColor: color }]}>
+    <View style={[styles.container, { borderColor: color, flex: 1 }]}>
       <TextInput
         placeholderTextColor={placeholderColor}
         style={[
-          { color },
+          { color, width: "100%" },
           type === "default" ? styles.default : undefined,
           type === "title" ? styles.title : undefined,
           type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
