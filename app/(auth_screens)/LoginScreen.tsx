@@ -81,7 +81,7 @@ export default function LoginScreen() {
       initialValues: { email: "", password: "" },
       validationSchema,
       onSubmit: async (values) => {
-       await handleLogin(values.email, values.password);
+        await handleLogin(values.email, values.password);
       },
     });
 
@@ -168,9 +168,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: wp(8),
     color: "#fff",
-    textShadowColor: "rgba(0, 255, 255, 0.5)",
+    textShadowColor: "#ff4655",
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    textShadowRadius: 4,
   },
   formContainer: {
     alignItems: "center",

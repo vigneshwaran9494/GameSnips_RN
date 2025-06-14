@@ -62,6 +62,7 @@ const useCharacterAnimation = (
 
 export default function SplashScreen() {
   const { userData } = useAuth();
+  
   const characters = ANIMATION_CONFIG.APP_NAME.split("");
   const containerStyle = useFadeScaleAnimation({
     ANIMATION_DURATION: ANIMATION_CONFIG.ANIMATION_DURATION,
