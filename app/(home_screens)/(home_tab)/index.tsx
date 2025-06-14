@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  RefreshControl,
   Text,
   View,
 } from "react-native";
@@ -48,9 +49,22 @@ export default function index() {
   return (
     <BodyContainer>
       <FlatList
-        style={{}}
+        onRefresh={() => {
+          console.log("refreshing");
+        }}
+        refreshing={isLoading}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            colors={["#ff4655"]}
+            tintColor={"#ff4655"}
+            onRefresh={() => {
+              console.log("refreshing");
+            }}
+          />
+        }
         data={feeds}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => `${item.id}-${item.createdAt}`}
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         snapToInterval={itemHeight}

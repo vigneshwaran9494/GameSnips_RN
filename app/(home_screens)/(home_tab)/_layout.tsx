@@ -13,6 +13,11 @@ interface Screen {
  * @returns The home tab layout
  */
 export default function HomeTabLayout() {
+
+  const tabBarColor = useThemeColor({}, "background");
+  const tabBarIconActiveColor = useThemeColor({}, "tabIconSelected");
+  const tabBarIconInactiveColor = useThemeColor({}, "tabIconDefault");
+
   /**
    * @description Screens for the home tab
    * @type {Array<{name: string, title: string, icon: keyof typeof Ionicons.glyphMap}>}
@@ -52,9 +57,7 @@ export default function HomeTabLayout() {
     return <Ionicons name={name} color={color} size={size} />;
   };
 
-  const tabBarColor = useThemeColor({}, "background");
-  const tabBarIconActiveColor = useThemeColor({}, "text");
-  const tabBarIconInactiveColor = useThemeColor({}, "textPlaceholder");
+
 
   return (
     <Tabs
@@ -64,6 +67,8 @@ export default function HomeTabLayout() {
         tabBarStyle: {
           backgroundColor: tabBarColor,
         },
+        tabBarActiveTintColor: tabBarIconActiveColor,
+        tabBarInactiveTintColor: tabBarIconInactiveColor,
       }}
     >
       {screens.map((screen) => (

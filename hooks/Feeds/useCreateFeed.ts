@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { getDatabase, push, ref } from "firebase/database";
 import { useState } from "react";
 
@@ -15,6 +16,7 @@ interface UseCreateFeedReturn {
 
 export function useCreateFeed(): UseCreateFeedReturn {
     const [isLoading, setIsLoading] = useState(false);
+    const { userData } = useAuth();
 
     const createFeed = async (feedData: CreateFeedInput) => {
         setIsLoading(true);
@@ -29,9 +31,9 @@ export function useCreateFeed(): UseCreateFeedReturn {
                 description: feedData.description,
                 image: `https://picsum.photos/seed/${feedData.title.toLowerCase().replace(/\s+/g, '-')}/768/1024`,
                 author: {
-                    id: 1,
-                    name: feedData.creatorName || "Anonymous",
-                    image: "https://avatar.iran.liara.run/public"
+                    id: userData?.uid || "",
+                    name: userData?.displayName || userData?.email?.split("@")[0] || "Anonymous",
+                    image: userData?.photoURL || "https://avatar.iran.liara.run/public"
                 },
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
