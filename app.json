@@ -7,6 +7,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "gamesnips",
     "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "./assets/fonts/*"
+    ],
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,

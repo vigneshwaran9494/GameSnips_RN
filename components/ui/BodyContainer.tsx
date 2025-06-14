@@ -1,3 +1,4 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { SafeAreaView, StyleSheet } from "react-native";
 
 /**
@@ -11,7 +12,13 @@ export default function BodyContainer({
 }: {
   children: React.ReactNode;
 }) {
-  return <SafeAreaView style={styles.container}>{children}</SafeAreaView>;
+  const backgroundColor = useThemeColor({}, "background");
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      {children}
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
