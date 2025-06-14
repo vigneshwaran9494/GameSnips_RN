@@ -1,5 +1,5 @@
 import { ThemedView } from "@/components/ThemedView";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "@/context/AuthContext";
 import { router } from "expo-router";
 import _ from "lodash";
 import React, { useEffect } from "react";
@@ -12,60 +12,90 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-export default function index() {
-  const text = "Game Snips";
-  const characters = text.split("");
+// Animation configuration
+const ANIMATION_CONFIG = {
+  SPLASH_DURATION: 5000,
+  ANIMATION_DURATION: 500,
+  CHARACTER_DELAY: 100,
+  APP_NAME: "Game Snips",
+} as const;
+
+// Types
+type AnimationConfig = typeof ANIMATION_CONFIG;
+
+// Custom hook for fade and scale animation
+const useFadeScaleAnimation = (config: Pick<AnimationConfig, 'ANIMATION_DURATION'>) => {
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.5);
 
   useEffect(() => {
-    // Start animations
-    opacity.value = withTiming(1, { duration: 500 });
-    scale.value = withTiming(1, { duration: 500 });
+    opacity.value = withTiming(1, { duration: config.ANIMATION_DURATION });
+    scale.value = withTiming(1, { duration: config.ANIMATION_DURATION });
+  }, [config.ANIMATION_DURATION]);
 
-    const timer = setTimeout(() => {
-      redirectToScreens();
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
+  return useAnimatedStyle(() => ({
     opacity: opacity.value,
     transform: [{ scale: scale.value }],
   }));
+};
 
-  async function redirectToScreens() {
-    const userData = await AsyncStorage.getItem("userData");
+// Custom hook for character animation
+const useCharacterAnimation = (
+  index: number,
+  config: Pick<AnimationConfig, 'CHARACTER_DELAY'>
+) => {
+  const charOpacity = useSharedValue(0);
+
+  useEffect(() => {
+    charOpacity.value = withSequence(
+      withDelay(
+        index * config.CHARACTER_DELAY,
+        withTiming(1, { duration: 100 })
+      )
+    );
+  }, [index, config.CHARACTER_DELAY]);
+
+  return useAnimatedStyle(() => ({
+    opacity: charOpacity.value,
+  }));
+};
+
+export default function SplashScreen() {
+  const { userData } = useAuth();
+  const characters = ANIMATION_CONFIG.APP_NAME.split("");
+  const containerStyle = useFadeScaleAnimation({
+    ANIMATION_DURATION: ANIMATION_CONFIG.ANIMATION_DURATION,
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(redirectToScreens, ANIMATION_CONFIG.SPLASH_DURATION);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const redirectToScreens = () => {
     if (!_.isEmpty(userData)) {
       router.replace("/(home_screens)");
     } else {
       router.replace("/(auth_screens)/LoginScreen");
     }
-  }
+  };
 
   return (
     <ThemedView style={styles.container}>
-      <Animated.View style={[styles.textContainer, animatedStyle]}>
-        {characters.map((char, index) => {
-          const charOpacity = useSharedValue(0);
-
-          useEffect(() => {
-            charOpacity.value = withSequence(
-              withDelay(index * 100, withTiming(1, { duration: 100 }))
-            );
-          }, []);
-
-          const charStyle = useAnimatedStyle(() => ({
-            opacity: charOpacity.value,
-          }));
-
-          return (
-            <Animated.Text key={index} style={[styles.text, charStyle]}>
-              {char}
-            </Animated.Text>
-          );
-        })}
+      <Animated.View style={[styles.textContainer, containerStyle]}>
+        {characters.map((char, index) => (
+          <Animated.Text
+            key={index}
+            style={[
+              styles.text,
+              useCharacterAnimation(index, {
+                CHARACTER_DELAY: ANIMATION_CONFIG.CHARACTER_DELAY,
+              }),
+            ]}
+          >
+            {char}
+          </Animated.Text>
+        ))}
       </Animated.View>
     </ThemedView>
   );

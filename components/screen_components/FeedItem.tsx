@@ -5,6 +5,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FeedAction from "./FeedAction";
+import FeedHeader from "./FeedHeader";
 
 export default function FeedItem({ item }: { item: FeedListItem }) {
   const insets = useSafeAreaInsets();
@@ -16,7 +18,7 @@ export default function FeedItem({ item }: { item: FeedListItem }) {
     <View style={[styles.container, { height: itemHeight }]}>
       <Image source={{ uri: item.image }} style={styles.image} />
       <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.8)']}
+        colors={["transparent", "rgba(0,0,0,0.8)"]}
         style={styles.gradient}
       />
       <View style={styles.content}>
@@ -28,6 +30,8 @@ export default function FeedItem({ item }: { item: FeedListItem }) {
         </View>
         <Text style={styles.description}>{item.description}</Text>
       </View>
+      <FeedHeader data={item} />
+      <FeedAction data={item} />
     </View>
   );
 }

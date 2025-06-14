@@ -31,7 +31,7 @@ export function useCreateFeed(): UseCreateFeedReturn {
                 author: {
                     id: 1,
                     name: feedData.creatorName || "Anonymous",
-                    image: "https://picsum.photos/200/300?grayscale"
+                    image: "https://avatar.iran.liara.run/public"
                 },
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),

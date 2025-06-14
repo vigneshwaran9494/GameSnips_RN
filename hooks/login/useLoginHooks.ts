@@ -1,25 +1,15 @@
+import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Toast from "react-native-toast-message";
 
 export const useLoginHooks = () => {
     const auth = getAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    
-    
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                router.replace('/(home_screens)');
-            } else {
-                console.log('User is logged out');
-            }
-        });
-        return () => unsubscribe();
-    }, []);
+    const { setUserData } = useAuth();
 
     /**
      * Login with phone number

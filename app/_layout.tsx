@@ -1,4 +1,4 @@
-import { firebaseConfig } from "@/firebaseConfig";
+import { app } from "@/firebaseConfig";
 import {
   DarkTheme,
   DefaultTheme,
@@ -10,11 +10,10 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { initializeApp } from "firebase/app";
 import { useEffect } from "react";
 
+import { AuthProvider } from "@/context/AuthContext";
 import Toast from "react-native-toast-message";
-
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -29,7 +28,7 @@ export default function RootLayout() {
 
   //initialize firebase
   useEffect(() => {
-    initializeApp(firebaseConfig);
+    app;
   }, []);
 
   if (!loaded) {
@@ -39,13 +38,21 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(auth_screens)" options={{ headerShown: false }} />
-        <Stack.Screen name="(home_screens)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-      <Toast />
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen
+            name="(auth_screens)"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(home_screens)"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+        <Toast />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

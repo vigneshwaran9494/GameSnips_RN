@@ -3,9 +3,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedView } from "@/components/ThemedView";
 import BodyContainer from "@/components/ui/BodyContainer";
+import { useAuth } from "@/context/AuthContext";
 import { useLoginHooks } from "@/hooks/login/useLoginHooks";
 import { hp, wp } from "@/resources/dimensions";
 import { MaterialIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { getAuth } from "firebase/auth";
 import { useFormik } from "formik";
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
@@ -41,7 +44,10 @@ const useLoginAnimations = () => {
     titleOpacity.value = withTiming(1, { duration: 800 });
     titleScale.value = withSpring(1, { damping: 8 });
     emailInputOpacity.value = withDelay(300, withTiming(1, { duration: 600 }));
-    passwordInputOpacity.value = withDelay(300, withTiming(1, { duration: 600 }));
+    passwordInputOpacity.value = withDelay(
+      300,
+      withTiming(1, { duration: 600 })
+    );
     buttonOpacity.value = withDelay(600, withTiming(1, { duration: 600 }));
     buttonScale.value = withDelay(600, withSpring(1, { damping: 8 }));
   }, []);
@@ -66,18 +72,30 @@ const useLoginAnimations = () => {
 
 export default function LoginScreen() {
   const { handleLogin, loading } = useLoginHooks();
-  const { titleStyle, emailInputStyle, passwordInputStyle, buttonStyle } = useLoginAnimations();
+  const { titleStyle, emailInputStyle, passwordInputStyle, buttonStyle } =
+    useLoginAnimations();
+  const auth = getAuth();
+  const { setUserData } = useAuth();
+  const { handleChange, handleBlur, handleSubmit, values, errors, touched } =
+    useFormik({
+      initialValues: { email: "", password: "" },
+      validationSchema,
+      onSubmit: async (values) => {
+       await handleLogin(values.email, values.password);
+      },
+    });
 
-  const { handleChange, handleBlur, handleSubmit, values, errors, touched } = useFormik({
-    initialValues: { email: "", password: "" },
-    validationSchema,
-    onSubmit: async (values) => {
-      const user = await handleLogin(values.email, values.password);
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        console.log("user", user);
+        setUserData(user);
+        router.replace("/(home_screens)" as any);
+      } else {
+        console.log("User is logged out");
       }
-    },
-  });
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <BodyContainer>
