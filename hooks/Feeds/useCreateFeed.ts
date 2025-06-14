@@ -4,7 +4,7 @@ import { useState } from "react";
 interface CreateFeedInput {
     title: string;
     description: string;
-    image: string;
+    image?: string;
     creatorName?: string;
 }
 
@@ -27,7 +27,7 @@ export function useCreateFeed(): UseCreateFeedReturn {
                 id: Date.now(),
                 title: feedData.title,
                 description: feedData.description,
-                image: 'https://picsum.photos/768/1024',
+                image: `https://picsum.photos/seed/${feedData.title.toLowerCase().replace(/\s+/g, '-')}/768/1024`,
                 author: {
                     id: 1,
                     name: feedData.creatorName || "Anonymous",

@@ -1,17 +1,15 @@
+import { ThemedButton } from "@/components/ThemedButton";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedTextInput } from "@/components/ThemedTextInput";
+import { ThemedView } from "@/components/ThemedView";
+import BodyContainer from "@/components/ui/BodyContainer";
 import { useCreateFeed } from "@/hooks/Feeds/useCreateFeed";
-import { Image } from "expo-image";
-import * as ImagePicker from "expo-image-picker";
+import { hp, wp } from "@/resources/dimensions";
+import { router } from "expo-router";
 import { useFormik } from "formik";
 import React from "react";
-import {
-  Button,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
+import Toast from "react-native-toast-message";
 import * as Yup from "yup";
 
 /*
@@ -26,7 +24,7 @@ const validationSchema = Yup.object({
     .min(10, "Description must be at least 10 characters")
     .max(100, "Description must be less than 100 characters"),
   creatorName: Yup.string().optional(),
-  image: Yup.string().required("Image is required"),
+  image: Yup.string().optional(),
 });
 
 export default function NewFeedScreen() {
@@ -40,94 +38,101 @@ export default function NewFeedScreen() {
     errors,
     touched,
     setFieldValue,
+    resetForm,
   } = useFormik({
-    initialValues: { title: "", description: "", creatorName: "", image: "" },
+    initialValues: { title: "", description: "", creatorName: "" },
     validationSchema,
     onSubmit: async (values) => {
       const result = await createFeed(values);
       if (result.success) {
         console.log("Feed created successfully");
+        resetForm();
+        Toast.show({
+          type: "success",
+          text1: "Feed created successfully",
+        });
+        router.navigate("/(home_screens)");
       } else {
         console.log("Failed to create feed");
+        Toast.show({
+          type: "error",
+          text1: "Failed to create feed",
+        });
       }
     },
   });
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setFieldValue("image", result.assets[0].uri);
-    }
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <View style={styles.bodyContainer}>
-          <Text>Game Title</Text>
-          <TextInput
-            placeholder="Game Title"
-            onChangeText={handleChange("title")}
-            onBlur={handleBlur("title")}
-            value={values.title}
-          />
-          {touched.title && errors.title && (
-            <Text style={styles.errorText}>{errors.title}</Text>
-          )}
-          <Text>Game Description</Text>
-          <TextInput
-            multiline={true}
-            placeholder="Game Description"
-            onChangeText={handleChange("description")}
-            onBlur={handleBlur("description")}
-            value={values.description}
-          />
-          {touched.description && errors.description && (
-            <Text style={styles.errorText}>{errors.description}</Text>
-          )}
-          <Text>Creator Name(Optional)</Text>
-          <TextInput
-            placeholder="Creator Name"
-            onChangeText={handleChange("creatorName")}
-            onBlur={handleBlur("creatorName")}
-            value={values.creatorName}
-          />
-          {touched.creatorName && errors.creatorName && (
-            <Text style={styles.errorText}>{errors.creatorName}</Text>
-          )}
-          <Text>Preview Image</Text>
-          <Button title="Pick Image" onPress={pickImage} />
-          {values.image && (
-            <Image source={{ uri: values.image }} style={styles.previewImage} />
-          )}
-          {touched.image && errors.image && (
-            <Text style={styles.errorText}>{errors.image}</Text>
-          )}
+    <BodyContainer style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <ThemedView style={styles.bodyContainer}>
+          <View style={styles.titleContainer}>
+            <ThemedText type="title">New Feed</ThemedText>
+          </View>
 
-          <Button
-            title={isLoading ? "Creating..." : "Submit"}
+          <View style={styles.inputContainer}>
+            <ThemedText type="default">Game Title</ThemedText>
+            <ThemedTextInput
+              placeholder="Enter game title"
+              onChangeText={handleChange("title")}
+              onBlur={handleBlur("title")}
+              value={values.title}
+              error={errors.title}
+              touched={touched.title}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <ThemedText type="default">Game Description</ThemedText>
+            <ThemedTextInput
+              multiline={true}
+              placeholder="Enter game description"
+              onChangeText={handleChange("description")}
+              onBlur={handleBlur("description")}
+              value={values.description}
+              error={errors.description}
+              touched={touched.description}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <ThemedText type="default">Creator Name(Optional)</ThemedText>
+            <ThemedTextInput
+              placeholder="Enter creator name"
+              onChangeText={handleChange("creatorName")}
+              onBlur={handleBlur("creatorName")}
+              value={values.creatorName}
+              error={errors.creatorName}
+              touched={touched.creatorName}
+            />
+          </View>
+          <ThemedButton
+            title={"Submit"}
             onPress={() => handleSubmit()}
             disabled={isLoading}
+            isLoading={isLoading}
           />
-        </View>
+        </ThemedView>
       </ScrollView>
-    </SafeAreaView>
+    </BodyContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
+  },
+  scrollView: {
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: wp(4),
   },
   bodyContainer: {
+    width: "100%",
     flexDirection: "column",
-    gap: 10,
+    alignItems: "center",
+    gap: hp(2),
   },
   previewImage: {
     width: 200,
@@ -136,5 +141,13 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginBottom: 10,
+  },
+  titleContainer: {
+    marginBottom: 10,
+  },
+  inputContainer: {
+    width: "100%",
+    flexDirection: "column",
+    gap: hp(1),
   },
 });

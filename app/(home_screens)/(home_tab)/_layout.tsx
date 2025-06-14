@@ -1,3 +1,4 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
@@ -21,11 +22,6 @@ export default function HomeTabLayout() {
       name: "index",
       title: "Home",
       icon: "home" as keyof typeof Ionicons.glyphMap,
-    },
-    {
-      name: "SearchScreen",
-      title: "Search",
-      icon: "search" as keyof typeof Ionicons.glyphMap,
     },
     {
       name: "NewFeedScreen",
@@ -56,11 +52,18 @@ export default function HomeTabLayout() {
     return <Ionicons name={name} color={color} size={size} />;
   };
 
+  const tabBarColor = useThemeColor({}, "background");
+  const tabBarIconActiveColor = useThemeColor({}, "text");
+  const tabBarIconInactiveColor = useThemeColor({}, "textPlaceholder");
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: tabBarColor,
+        },
       }}
     >
       {screens.map((screen) => (
