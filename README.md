@@ -1,6 +1,6 @@
 # Game Snips
 
-## Vigneshwaran
+## Vigneshwaran (wcvignesh@gmail.com)
 
 ## Project Overview
 Game Snips is a React Native mobile application built with Expo that provides a platform for gamers to share and discover gaming moments. The app features a modern UI with smooth animations and a robust authentication system.
